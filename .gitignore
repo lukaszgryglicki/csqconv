@@ -13,4 +13,6 @@
 
 # LG
 *.swp
+*.jpg
+*.raw
 /csqconv

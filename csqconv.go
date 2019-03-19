@@ -17,6 +17,7 @@ func processCsqFile(fn string, minFrames int) error {
 		return err
 	}
 	ary := bytes.Split(data, []byte("\x46\x46\x46\x00\x52\x54"))
+	ary = ary[1:]
 	nAry := len(ary)
 	if nAry < minFrames {
 		fmt.Printf("%s: no frames\n", fn)
@@ -26,11 +27,26 @@ func processCsqFile(fn string, minFrames int) error {
 	root := strings.Join(fna[0:len(fna)-1], ".")
 	fmt.Printf("%s: %d frames --> %s_nnnnnnnn.jpg\n", fn, nAry, root)
 	var ifn string
+	ext := []string{".raw", ".jpg"}
+	jpegLS := []byte("\xff\xd8\xff\xf7")
+	hdr := [][]byte{[]byte(""), jpegLS}
 	for i, fdata := range ary {
-		ifn = fmt.Sprintf("%s_%08d.jpg", root, i)
-		err = ioutil.WriteFile(ifn, fdata, 0644)
-		if err != nil {
-			return err
+		ifn = fmt.Sprintf("%s_%08d", root, i)
+		iary := bytes.Split(fdata, jpegLS)
+		liary := len(iary)
+		if liary != 2 {
+			fmt.Printf("%s: broken frame\n", ifn)
+			err = ioutil.WriteFile(ifn+".err", fdata, 0644)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+		for k, idata := range iary {
+			err = ioutil.WriteFile(ifn+ext[k], append(hdr[k], idata...), 0644)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
