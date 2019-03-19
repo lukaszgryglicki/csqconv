@@ -6,10 +6,12 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 func processCsqFile(fn string, minFrames int) error {
+	var err error
 	data, err := ioutil.ReadFile(fn)
 	if err != nil {
 		return err
@@ -20,14 +22,25 @@ func processCsqFile(fn string, minFrames int) error {
 		fmt.Printf("%s: no frames\n", fn)
 		return nil
 	}
-	fmt.Printf("%s: %d frames\n", fn, nAry)
+	fna := strings.Split(fn, ".")
+	root := strings.Join(fna[0:len(fna)-1], ".")
+	fmt.Printf("%s: %d frames --> %s_nnnnnnnn.jpg\n", fn, nAry, root)
+	var ifn string
+	for i, fdata := range ary {
+		ifn = fmt.Sprintf("%s_%08d.jpg", root, i)
+		err = ioutil.WriteFile(ifn, fdata, 0644)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func main() {
+	var err error
 	minFrames := os.Getenv("MIN_FRAMES")
 	if minFrames == "" {
-		minFrames = "2"
+		minFrames = "5"
 	}
 	mf, err := strconv.Atoi(minFrames)
 	if err != nil {
@@ -36,7 +49,7 @@ func main() {
 	}
 	for _, arg := range os.Args[1:] {
 		dtStart := time.Now()
-		err := processCsqFile(arg, mf)
+		err = processCsqFile(arg, mf)
 		if err != nil {
 			fmt.Printf("%s: error: %+v\n", arg, err)
 		}
