@@ -15,4 +15,5 @@
 *.swp
 *.jpg
 *.raw
+*.jpegls
 /csqconv

@@ -48,6 +48,7 @@ strip: ${BINARIES}
 	${STRIP} ${BINARIES}
 
 clean:
-	rm -f ${BINARIES}
+	-rm -f ${BINARIES}
+	-rm -f *.jpegls *.jpg *.raw *.png *.avi *.mp4
 
 .PHONY: all

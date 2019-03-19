@@ -25,9 +25,9 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 	fna := strings.Split(fn, ".")
 	root := strings.Join(fna[0:len(fna)-1], ".")
-	fmt.Printf("%s: %d frames --> %s_nnnnnnnn.jpg\n", fn, nAry, root)
+	fmt.Printf("%s: %d frames --> %s_nnnnnnnn.jpegls\n", fn, nAry, root)
 	var ifn string
-	ext := []string{".raw", ".jpg"}
+	ext := []string{".raw", ".jpegls"}
 	jpegLS := []byte("\xff\xd8\xff\xf7")
 	hdr := [][]byte{[]byte(""), jpegLS}
 	for i, fdata := range ary {
