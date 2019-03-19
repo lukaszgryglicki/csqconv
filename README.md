@@ -4,5 +4,6 @@ Convert FLIR camera `*.csq` files into a sequence of loseless JPEG's and a video
 
 # Usage
 
-- `make && mnake install`.
-- `csqconv *.csq`.
+- `make && make install`.
+- `csqconv filename.csq`.
+- `./make_video.sh filename`
