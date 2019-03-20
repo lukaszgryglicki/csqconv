@@ -217,7 +217,7 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 	fna := strings.Split(fn, ".")
 	root := strings.Join(fna[0:len(fna)-1], ".")
-	fmt.Printf("%s: %d frames --> %s_nnnnnnnn.jpegls\n", fn, nAry, root)
+	fmt.Printf("%s: %d frames\n", fn, nAry)
 
 	debug := 0
 	if os.Getenv("DEBUG") != "" {
@@ -235,6 +235,9 @@ func processCsqFile(fn string, minFrames int) error {
 	hdr := [][]byte{[]byte(""), jpegLS}
 	indices := []int{}
 	for i, fdata := range ary {
+		if i > 0 && i%10 == 9 {
+			fmt.Printf("%s: frame %d/%d\n", fn, i+1, nAry)
+		}
 		ifn = fmt.Sprintf("%s_%08d", root, i)
 		iary := bytes.Split(fdata, jpegLS)
 		liary := len(iary)
