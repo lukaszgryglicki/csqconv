@@ -274,9 +274,8 @@ func processCsqFile(fn string, minFrames int) error {
 		output,
 		[]string{
 			"ffmpeg", "-f", "image2",
-			"-vcodec", "png", "-r", "30",
-			"-i", pattern, "-y",
-			"-vcodec", "png", vidfn,
+			"-vcodec", "png", "-r", "30", "-i", pattern,
+			"-q:v", "0", "-vcodec", "libx264", "-y", vidfn,
 		},
 		nil,
 	)
