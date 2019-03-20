@@ -137,7 +137,7 @@ func execCommand(debug int, output bool, cmdAndArgs []string, env map[string]str
 	return outStr, nil
 }
 
-func processFrame(root string, frameNo int, debug int, output bool) error {
+func processFrame(root string, frameNo int, debug int, output bool, norm bool) error {
 	// ffmpeg -f image2 -vcodec jpegls -i "$f" -y -f image2 -vcodec png "$f2"
 	root = fmt.Sprintf("%s_%08d", root, frameNo)
 	ifn := root + ".jpegls"
@@ -158,6 +158,46 @@ func processFrame(root string, frameNo int, debug int, output bool) error {
 			fmt.Printf("%s -> %s:\n%s\n", ifn, ofn, res)
 		}
 		return err
+	}
+	if !norm {
+		res, err = execCommand(
+			debug,
+			output,
+			[]string{"rm", "-f", ifn},
+			nil,
+		)
+		if err != nil {
+			if res != "" {
+				fmt.Printf("rm %s:\n%s\n", ifn, res)
+			}
+			return err
+		}
+	}
+	res, err = execCommand(
+		debug,
+		output,
+		[]string{"jpeg", ofn},
+		nil,
+	)
+	if err != nil {
+		if res != "" {
+			fmt.Printf("jpeg %s:\n%s\n", ofn, res)
+		}
+		return err
+	}
+	if !norm {
+		res, err = execCommand(
+			debug,
+			output,
+			[]string{"rm", "-f", ofn},
+			nil,
+		)
+		if err != nil {
+			if res != "" {
+				fmt.Printf("rm %s:\n%s\n", ofn, res)
+			}
+			return err
+		}
 	}
 	return nil
 }
@@ -187,6 +227,7 @@ func processCsqFile(fn string, minFrames int) error {
 		}
 	}
 	output := os.Getenv("OUTPUT") != ""
+	norm := os.Getenv("NORM") != ""
 
 	var ifn string
 	ext := []string{".raw", ".jpegls"}
@@ -210,8 +251,48 @@ func processCsqFile(fn string, minFrames int) error {
 				return err
 			}
 		}
-		err = processFrame(root, i, debug, output)
+		err = processFrame(root, i, debug, output, norm)
 		if err != nil {
+			return err
+		}
+	}
+	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small_%08d.png" -y -vcodec png "small.mp4"
+	a := strings.Split(root, "/")
+	lA := len(a)
+	last := a[lA-1]
+	a[lA-1] = "co_" + last
+	nroot := strings.Join(a, "/")
+	pattern := "co_" + nroot + "_%08d.png"
+	vidfn := root + ".mp4"
+	res, err := execCommand(
+		debug,
+		output,
+		[]string{
+			"ffmpeg", "-f", "image2",
+			"-vcodec", "png", "-r", "30",
+			"-i", pattern, "-y",
+			"-vcodec", "png", vidfn,
+		},
+		nil,
+	)
+	if err != nil {
+		if res != "" {
+			fmt.Printf("%s -> %s:\n%s\n", pattern, vidfn, res)
+		}
+		return err
+	}
+	if !norm {
+		rmpattern := "co_" + nroot + "*.png"
+		res, err = execCommand(
+			debug,
+			output,
+			[]string{"rm", "-f", rmpattern},
+			nil,
+		)
+		if err != nil {
+			if res != "" {
+				fmt.Printf("rm %s:\n%s\n", rmpattern, res)
+			}
 			return err
 		}
 	}
@@ -222,6 +303,7 @@ func processCsqFile(fn string, minFrames int) error {
 // MIN_FRAMES (default 5)
 // DEBUG (default 0)
 // OUTPUT (default false)
+// NORM (default false)
 func main() {
 	var err error
 	minFrames := os.Getenv("MIN_FRAMES")
