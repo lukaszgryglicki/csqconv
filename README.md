@@ -1,6 +1,6 @@
 # csqconv
 
-Convert FLIR camera `*.csq` files into a sequence of loseless JPEG's and a video file readable by standard tools.
+Convert FLIR camera `*.csq` files into a Mp4 H.264 video file (you can optionaly save all intermediate files: *.raw, *.jpegls, *.png etc.)
 
 # Requirements
 
