@@ -233,6 +233,7 @@ func processCsqFile(fn string, minFrames int) error {
 	ext := []string{".raw", ".jpegls"}
 	jpegLS := []byte("\xff\xd8\xff\xf7")
 	hdr := [][]byte{[]byte(""), jpegLS}
+	indices := []int{}
 	for i, fdata := range ary {
 		ifn = fmt.Sprintf("%s_%08d", root, i)
 		iary := bytes.Split(fdata, jpegLS)
@@ -246,6 +247,9 @@ func processCsqFile(fn string, minFrames int) error {
 			continue
 		}
 		for k, idata := range iary {
+			if !norm && k == 0 {
+				continue
+			}
 			err = ioutil.WriteFile(ifn+ext[k], append(hdr[k], idata...), 0644)
 			if err != nil {
 				return err
@@ -255,6 +259,7 @@ func processCsqFile(fn string, minFrames int) error {
 		if err != nil {
 			return err
 		}
+		indices = append(indices, i)
 	}
 	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small_%08d.png" -y -vcodec png "small.mp4"
 	a := strings.Split(root, "/")
@@ -262,7 +267,7 @@ func processCsqFile(fn string, minFrames int) error {
 	last := a[lA-1]
 	a[lA-1] = "co_" + last
 	nroot := strings.Join(a, "/")
-	pattern := "co_" + nroot + "_%08d.png"
+	pattern := nroot + "_%08d.png"
 	vidfn := root + ".mp4"
 	res, err := execCommand(
 		debug,
@@ -282,11 +287,15 @@ func processCsqFile(fn string, minFrames int) error {
 		return err
 	}
 	if !norm {
-		rmpattern := "co_" + nroot + "*.png"
+		cmd := []string{"rm", "-f"}
+		for _, idx := range indices {
+			cmd = append(cmd, fmt.Sprintf("%s_%08d.png", nroot, idx))
+		}
+		rmpattern := nroot + "*.png"
 		res, err = execCommand(
 			debug,
 			output,
-			[]string{"rm", "-f", rmpattern},
+			cmd,
 			nil,
 		)
 		if err != nil {
