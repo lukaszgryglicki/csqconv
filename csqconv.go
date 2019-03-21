@@ -13,6 +13,8 @@ import (
 )
 
 func execCommand(debug int, output bool, cmdAndArgs []string, env map[string]string) (string, error) {
+	// Execution time
+	dtStart := time.Now()
 	// STDOUT pipe size
 	pipeSize := 0x100
 
@@ -125,6 +127,8 @@ func execCommand(debug int, output bool, cmdAndArgs []string, env map[string]str
 		if lenInfo > 0x280 {
 			info = info[0:0x140] + "..." + info[lenInfo-0x140:lenInfo]
 		}
+		dtEnd := time.Now()
+		fmt.Printf("%s: %+v\n", info, dtEnd.Sub(dtStart))
 	}
 	outStr := ""
 	if output {
@@ -169,32 +173,6 @@ func processFrame(root string, frameNo int, debug int, output bool, norm bool) e
 		if err != nil {
 			if res != "" {
 				fmt.Printf("rm %s:\n%s\n", ifn, res)
-			}
-			return err
-		}
-	}
-	res, err = execCommand(
-		debug,
-		output,
-		[]string{"jpeg", ofn},
-		nil,
-	)
-	if err != nil {
-		if res != "" {
-			fmt.Printf("jpeg %s:\n%s\n", ofn, res)
-		}
-		return err
-	}
-	if !norm {
-		res, err = execCommand(
-			debug,
-			output,
-			[]string{"rm", "-f", ofn},
-			nil,
-		)
-		if err != nil {
-			if res != "" {
-				fmt.Printf("rm %s:\n%s\n", ofn, res)
 			}
 			return err
 		}
@@ -264,7 +242,37 @@ func processCsqFile(fn string, minFrames int) error {
 		}
 		indices = append(indices, i)
 	}
+
+	// Postprocess all frames
+	fmt.Printf("Postprocessing %d frames\n", len(indices))
+	cmd := []string{"jpeg"}
+	for _, idx := range indices {
+		cmd = append(cmd, fmt.Sprintf("%s_%08d.png", root, idx))
+	}
+	res, err := execCommand(debug, output, cmd, nil)
+	if err != nil {
+		if res != "" {
+			fmt.Printf("postprocessing frames via 'jpeg' tool:\n%s\n", res)
+		}
+		return err
+	}
+
+	// Remove intermediate PNGs
+	if !norm {
+		cmdRm := []string{"rm", "-f"}
+		cmdRm = append(cmdRm, cmd[1:]...)
+		res, err = execCommand(debug, output, cmdRm, nil)
+		if err != nil {
+			if res != "" {
+				fmt.Printf("rm intermediate PNGs:\n%s\n", res)
+			}
+			return err
+		}
+	}
+
+	// Create final X.264 MP4
 	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small_%08d.png" -y -vcodec png "small.mp4"
+	fmt.Printf("Creating final video\n")
 	a := strings.Split(root, "/")
 	lA := len(a)
 	last := a[lA-1]
@@ -272,7 +280,7 @@ func processCsqFile(fn string, minFrames int) error {
 	nroot := strings.Join(a, "/")
 	pattern := nroot + "_%08d.png"
 	vidfn := root + ".mp4"
-	res, err := execCommand(
+	res, err = execCommand(
 		debug,
 		output,
 		[]string{
@@ -288,18 +296,15 @@ func processCsqFile(fn string, minFrames int) error {
 		}
 		return err
 	}
+
+	// Cleanup postprocessed frames
 	if !norm {
-		cmd := []string{"rm", "-f"}
+		cmdRm := []string{"rm", "-f"}
 		for _, idx := range indices {
-			cmd = append(cmd, fmt.Sprintf("%s_%08d.png", nroot, idx))
+			cmdRm = append(cmdRm, fmt.Sprintf("%s_%08d.png", nroot, idx))
 		}
 		rmpattern := nroot + "*.png"
-		res, err = execCommand(
-			debug,
-			output,
-			cmd,
-			nil,
-		)
+		res, err = execCommand(debug, output, cmdRm, nil)
 		if err != nil {
 			if res != "" {
 				fmt.Printf("rm %s:\n%s\n", rmpattern, res)
