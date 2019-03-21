@@ -1,6 +1,6 @@
 # csqconv
 
-Convert FLIR camera `*.csq` files into a `*.pp4` H.264 video file (you can optionaly save all intermediate files: *.raw, *.jpegls, *.png etc.)
+Convert FLIR camera `*.csq` files into a `*.pp4` H.264 video file (you can optionaly save all intermediate files: `*.raw`, `*.jpegls`, `*.png` etc.)
 
 # Requirements
 
@@ -14,4 +14,5 @@ Convert FLIR camera `*.csq` files into a `*.pp4` H.264 video file (you can optio
 - `RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 csqconv ./small.csq`.
 - C optimized rainbow from grayscale conversion: `RLO=5 RHI=5 GLO=5 GHI=5 BLO=5 BHI=5 NA=1 LIB=libjpegbw.so RF="gsrainbowr(x1)" GF="gsrainbowg(x1)" BF="gsrainbowb(x1)" csqconv small.csq`.
 - `RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="gsrainbowre(x1, .02)" GF="gsrainbowge(x1, .02)" BF="gsrainbowbe(x1, .02)" csqconv small.csq`.
+- `RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(3*x1+gsrainbowr(x1))/4" GF="(3*x1+gsrainbowg(x1))/4" BF="(3*x1+gsrainbowb(x1))/4" csqconv FLIR0009.csq`.
 - See `jpegbw` REAME.md to see multiple options that can be passed to this tool.
