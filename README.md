@@ -25,3 +25,4 @@ Other examples:
 
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="saturate(((x1-.02)*1.04)^2., .02, .49)+saturate(((x1-.02)*1.04)^2., .51, .98_1)" GF="saturate(((x1-.02)*1.04)^2., .02, .49_1)-saturate(((x1-.02)*1.04)^2., 0.51,.51_1)+saturate(((x1-.02)*1.04)^2., .51, .98)" BF="saturate(((x1-.02)*1.04)^2., .02_1, .49)+saturate(((x1-.02)*1.04)^2., .51, .98)" csqconv FLIR0089.csq`.
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so BF="saturate((((1.-x1)-.02)*1.04)^2., .02_1,.98)" GF="saturate((((1-x1)-.02)*1.04)^2., .02, .98)" RF="saturate((((1.-x1)-.02)*1.04)^2., 0, .98_1)" csqconv FLIR0096.csq`.
+- `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="(sin(x1*6.283056*5.6+4)+1)/2" GF="(sin(x1*6.283056*4.7+3)+1)/2" BF="(sin(x1*6.283056*3.8+2)+1)/2" csqconv f.csq`.
