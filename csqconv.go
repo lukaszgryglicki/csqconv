@@ -143,7 +143,7 @@ func execCommand(debug int, output bool, cmdAndArgs []string, env map[string]str
 
 func processFrame(root string, frameNo int, debug int, output bool, norm bool) error {
 	// ffmpeg -f image2 -vcodec jpegls -i "$f" -y -f image2 -vcodec png "$f2"
-	root = fmt.Sprintf("%s_%08d", root, frameNo)
+	root = fmt.Sprintf("%s%06d", root, frameNo)
 	ifn := root + ".jpegls"
 	ofn := root + ".png"
 	res, err := execCommand(
@@ -216,7 +216,7 @@ func processCsqFile(fn string, minFrames int) error {
 		if i > 0 && i%10 == 9 {
 			fmt.Printf("%s: frame %d/%d\n", fn, i+1, nAry)
 		}
-		ifn = fmt.Sprintf("%s_%08d", root, i)
+		ifn = fmt.Sprintf("%s%06d", root, i)
 		iary := bytes.Split(fdata, jpegLS)
 		liary := len(iary)
 		if liary != 2 {
@@ -243,44 +243,63 @@ func processCsqFile(fn string, minFrames int) error {
 		indices = append(indices, i)
 	}
 
-	// Postprocess all frames
-	fmt.Printf("Postprocessing %d frames\n", len(indices))
-	cmd := []string{"jpeg"}
-	for _, idx := range indices {
-		cmd = append(cmd, fmt.Sprintf("%s_%08d.png", root, idx))
-	}
-	res, err := execCommand(debug, output, cmd, nil)
-	if err != nil {
-		if res != "" {
-			fmt.Printf("postprocessing frames via 'jpeg' tool:\n%s\n", res)
-		}
-		return err
+	nIndices := len(indices)
+	h := 0x1ff9 / (len(root) + 14)
+	packs := nIndices / h
+	if nIndices%h > 0 {
+		packs++
 	}
 
-	// Remove intermediate PNGs
-	if !norm {
-		cmdRm := []string{"rm", "-f"}
-		cmdRm = append(cmdRm, cmd[1:]...)
-		res, err = execCommand(debug, output, cmdRm, nil)
+	// Postprocess all frames in h-sized packs
+	indicesA := [][]int{}
+	for p := 0; p < packs; p++ {
+		f := h * p
+		t := f + h
+		if t > nIndices {
+			t = nIndices
+		}
+		indicesA = append(indicesA, indices[f:t])
+	}
+
+	for i, ind := range indicesA {
+		fmt.Printf("Postprocessing %d/%d pack: %d frames\n", i+1, packs, len(ind))
+		cmd := []string{"jpeg"}
+		for _, idx := range ind {
+			cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
+		}
+		res, err := execCommand(debug, output, cmd, nil)
 		if err != nil {
 			if res != "" {
-				fmt.Printf("rm intermediate PNGs:\n%s\n", res)
+				fmt.Printf("postprocessing frames via 'jpeg' tool:\n%s\n", res)
 			}
 			return err
+		}
+
+		// Remove intermediate PNGs
+		if !norm {
+			cmdRm := []string{"rm", "-f"}
+			cmdRm = append(cmdRm, cmd[1:]...)
+			res, err = execCommand(debug, output, cmdRm, nil)
+			if err != nil {
+				if res != "" {
+					fmt.Printf("rm intermediate PNGs:\n%s\n", res)
+				}
+				return err
+			}
 		}
 	}
 
 	// Create final X.264 MP4
-	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small_%08d.png" -y -vcodec png "small.mp4"
+	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -y -vcodec png "small.mp4"
 	fmt.Printf("Creating final video\n")
 	a := strings.Split(root, "/")
 	lA := len(a)
 	last := a[lA-1]
 	a[lA-1] = "co_" + last
 	nroot := strings.Join(a, "/")
-	pattern := nroot + "_%08d.png"
+	pattern := nroot + "%06d.png"
 	vidfn := root + ".mp4"
-	res, err = execCommand(
+	res, err := execCommand(
 		debug,
 		output,
 		[]string{
@@ -299,17 +318,19 @@ func processCsqFile(fn string, minFrames int) error {
 
 	// Cleanup postprocessed frames
 	if !norm {
-		cmdRm := []string{"rm", "-f"}
-		for _, idx := range indices {
-			cmdRm = append(cmdRm, fmt.Sprintf("%s_%08d.png", nroot, idx))
-		}
 		rmpattern := nroot + "*.png"
-		res, err = execCommand(debug, output, cmdRm, nil)
-		if err != nil {
-			if res != "" {
-				fmt.Printf("rm %s:\n%s\n", rmpattern, res)
+		for _, ind := range indicesA {
+			cmdRm := []string{"rm", "-f"}
+			for _, idx := range ind {
+				cmdRm = append(cmdRm, fmt.Sprintf("%s%06d.png", nroot, idx))
 			}
-			return err
+			res, err = execCommand(debug, output, cmdRm, nil)
+			if err != nil {
+				if res != "" {
+					fmt.Printf("rm %s:\n%s\n", rmpattern, res)
+				}
+				return err
+			}
 		}
 	}
 	return nil
