@@ -244,7 +244,7 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 
 	nIndices := len(indices)
-	h := 0x1ff9 / (len(root) + 14)
+	h := 0x1fff9 / (len(root) + 14)
 	packs := nIndices / h
 	if nIndices%h > 0 {
 		packs++
