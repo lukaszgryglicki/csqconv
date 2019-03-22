@@ -20,3 +20,8 @@ Convert FLIR camera `*.csq` files into a `*.pp4` H.264 video file (you can optio
 - Alarm, rainbow and white-hot/black-cold: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so BF="(3*x1+2*gsrainbowb(saturate(x1, .01_1,.99)))/5" GF="(3*x1+2*gsrainbowg(saturate(x1, .01, .99)))/5" RF="(3*x1+2*gsrainbowr(saturate(x1, 0, .99_1)))/5" csqconv f.csq`.
 - Alarms (low B, medium G, high R): `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="saturate(x1, .02, .49)+saturate(x1, .51, .98_1)" GF="saturate(x1, .02, .49_1)-saturate(x1, 0.51,.51_1)+saturate(x1, .51, .98)" BF="saturate(x1, .02_1, .49)+saturate(x1, .51, .98)" csqconv f.csq`.
 - See `jpegbw` README.md to see multiple options that can be passed to this tool.
+
+Other examples:
+
+- `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="saturate(((x1-.02)*1.04)^2., .02, .49)+saturate(((x1-.02)*1.04)^2., .51, .98_1)" GF="saturate(((x1-.02)*1.04)^2., .02, .49_1)-saturate(((x1-.02)*1.04)^2., 0.51,.51_1)+saturate(((x1-.02)*1.04)^2., .51, .98)" BF="saturate(((x1-.02)*1.04)^2., .02_1, .49)+saturate(((x1-.02)*1.04)^2., .51, .98)" csqconv FLIR0089.csq`.
+- `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so BF="saturate((((1.-x1)-.02)*1.04)^2., .02_1,.98)" GF="saturate((((1-x1)-.02)*1.04)^2., .02, .98)" RF="saturate((((1.-x1)-.02)*1.04)^2., 0, .98_1)" csqconv FLIR0096.csq`.
