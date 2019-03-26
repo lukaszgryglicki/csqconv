@@ -18,5 +18,6 @@
 *.png
 *.mp4
 *.csq
+*.err
 *.jpegls
 /csqconv
