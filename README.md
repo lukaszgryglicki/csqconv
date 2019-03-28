@@ -33,3 +33,4 @@ Other examples:
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 RF='if(x1<.2,5*x1,if(x1<.6,1,1.75-1.25*x1))' GF='if(x1<.2,0,if(x1<.4,5*(x1-.2),if(x1<.8,1,3-2.5*x1)))' BF='if(x1<.4,0,if(x1<.6,5*(x1-.4),1))' csqconv f.csq`.
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 RF='if(x1>.5,2*(1-x1),1)' GF='if(x1>.5,0,(.5-x1)*2)' BF='if(x1>.5,0,(.5-x1)*2)' csqconv f.csq`.
 - `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 RR=1 RG=0 RB=0 GR=0 GG=1 GB=0 BR=0 BG=0 BB=1 LIB=libjpegbw.so RF="x1" GF="x1" BF="x1" INF=32 EINF=1 csqconv f.csq`.
+- `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(cos(x1*3.1415926)+1)/2" GF="1-x1" BF="1-x1" HPOW=1 INF=20 csqconv f.csq`.
