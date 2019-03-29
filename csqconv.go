@@ -181,6 +181,23 @@ func processFrame(root string, frameNo int, debug int, output bool, norm bool) e
 }
 
 func processCsqFile(fn string, minFrames int) error {
+	mode := os.Getenv("MODE")
+	crf := ""
+	mpng := "mpng"
+	if mode != "" && mode != mpng {
+		crf = os.Getenv("CRF")
+		if crf != "" {
+			icrf, err := strconv.Atoi(os.Getenv("CRF"))
+			if err != nil {
+				return err
+			}
+			if icrf < 0 || icrf > 51 {
+				return fmt.Errorf("crf must be from 0-51 range, got %d", icrf)
+			}
+		} else {
+			crf = "17"
+		}
+	}
 	var err error
 	data, err := ioutil.ReadFile(fn)
 	if err != nil {
@@ -290,7 +307,14 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 
 	// Create final X.264 MP4
-	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -y -vcodec png "small.mp4"
+	// To check frames info and encoded info
+	// ffmpeg -i "co_small%06d.png" -f framehash -
+	// ffmpeg -i small.mp4 -map 0:v -f framehash -
+	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -q:v 0 -y -vcodec libx264 -y "small.mp4"
+	// Truly lossless mpng (keeps 16 bit color data - each frama checksum match original input PNGs) - but takes 150x more space
+	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -codec copy -y "small.mp4"
+	// Truly lossless H.264 - slow and still 50x times more space than -q:v 0
+	// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -vcodec libx264 -crf 0 -preset veryslow -y "small.mp4"
 	fmt.Printf("Creating final video\n")
 	a := strings.Split(root, "/")
 	lA := len(a)
@@ -299,16 +323,31 @@ func processCsqFile(fn string, minFrames int) error {
 	nroot := strings.Join(a, "/")
 	pattern := nroot + "%06d.png"
 	vidfn := root + ".mp4"
-	res, err := execCommand(
-		debug,
-		output,
-		[]string{
+	vCmd := []string{}
+	if mode == "" {
+		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -q:v 0 -y -vcodec libx264 -y "small.mp4"
+		vCmd = []string{
 			"ffmpeg", "-f", "image2",
 			"-vcodec", "png", "-r", "30", "-i", pattern,
 			"-q:v", "0", "-vcodec", "libx264", "-y", vidfn,
-		},
-		nil,
-	)
+		}
+	} else if mode == mpng {
+		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -codec copy -y "small.mp4"
+		vCmd = []string{
+			"ffmpeg", "-f", "image2",
+			"-vcodec", "png", "-r", "30", "-i", pattern,
+			"-codec", "copy", "-y", vidfn,
+		}
+	} else {
+		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -vcodec libx264 -crf 0 -preset veryslow -y "small.mp4"
+		vCmd = []string{
+			"ffmpeg", "-f", "image2",
+			"-vcodec", "png", "-r", "30", "-i", pattern,
+			"-vcodec", "libx264", "-crf", crf,
+			"-preset", mode, "-y", vidfn,
+		}
+	}
+	res, err := execCommand(debug, output, vCmd, nil)
 	if err != nil {
 		if res != "" {
 			fmt.Printf("%s -> %s:\n%s\n", pattern, vidfn, res)
@@ -336,12 +375,32 @@ func processCsqFile(fn string, minFrames int) error {
 	return nil
 }
 
+func help() {
+	helpStr := `
+Environment variables:
+MIN_FRAMES - minimum number of frames that must be present in CSQ file (default 5)
+DEBUG - enabled debug mode (default 0)
+OUTPUT - enabled additional output
+NORM - do not remove temporary files used
+MODE - set video encoding mode: if empty then uses '-q:v 0', else:
+  mpng (loseless PNG sequence), libx264 preset name otherwise (CRF mode):
+  ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow
+CRF - set quantizer parameter: 0-51 when running in CRF mode, default 17
+`
+	fmt.Printf("%s\n", helpStr)
+}
+
 // Env:
 // MIN_FRAMES (default 5)
 // DEBUG (default 0)
 // OUTPUT (default false)
 // NORM (default false)
 func main() {
+	if len(os.Args) == 1 {
+		fmt.Printf("Need at least one file name\n")
+		help()
+		return
+	}
 	var err error
 	minFrames := os.Getenv("MIN_FRAMES")
 	if minFrames == "" {
