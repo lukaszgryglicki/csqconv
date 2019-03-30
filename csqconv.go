@@ -230,7 +230,7 @@ func processCsqFile(fn string, minFrames int) error {
 	hdr := [][]byte{[]byte(""), jpegLS}
 	indices := []int{}
 	for i, fdata := range ary {
-		if i > 0 && i%10 == 9 {
+		if i > 0 && i%100 == 99 {
 			fmt.Printf("%s: frame %d/%d\n", fn, i+1, nAry)
 		}
 		ifn = fmt.Sprintf("%s%06d", root, i)
