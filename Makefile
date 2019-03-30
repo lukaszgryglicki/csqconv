@@ -1,5 +1,5 @@
 GO_BIN_FILES=csqconv.go
-GO_BIN_CMDS=csqconv
+GO_BIN_CMDS=github.com/lukaszgryglicki/csqconv
 GO_ENV=CGO_ENABLED=0
 GO_BUILD=go build -ldflags '-s -w'
 GO_INSTALL=go install -ldflags '-s'
@@ -49,6 +49,6 @@ strip: ${BINARIES}
 
 clean:
 	-rm -f ${BINARIES}
-	-rm -f *.jpegls *.jpg *.raw *.png *.avi *.mp4
+	-rm -f *.jpegls *.jpg *.raw *.png *.hint
 
 .PHONY: all

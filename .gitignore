@@ -20,4 +20,5 @@
 *.csq
 *.err
 *.jpegls
+*.hint
 /csqconv

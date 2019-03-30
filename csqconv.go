@@ -223,6 +223,7 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 	output := os.Getenv("OUTPUT") != ""
 	norm := os.Getenv("NORM") != ""
+	hint := os.Getenv("HINT") != ""
 
 	var ifn string
 	ext := []string{".raw", ".jpegls"}
@@ -279,7 +280,21 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 
 	for i, ind := range indicesA {
-		fmt.Printf("Postprocessing %d/%d pack: %d frames\n", i+1, packs, len(ind))
+		if hint {
+			fmt.Printf("Postprocessing %d/%d pack: %d frames (hint command)\n", i+1, packs, len(ind))
+			cmd := []string{"hist"}
+			for _, idx := range ind {
+				cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
+			}
+			res, err := execCommand(debug, output, cmd, nil)
+			if err != nil {
+				if res != "" {
+					fmt.Printf("postprocessing frames via 'jpeg' tool:\n%s\n", res)
+				}
+				return err
+			}
+		}
+		fmt.Printf("Postprocessing %d/%d pack: %d frames (jpeg command)\n", i+1, packs, len(ind))
 		cmd := []string{"jpeg"}
 		for _, idx := range ind {
 			cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
@@ -300,6 +315,17 @@ func processCsqFile(fn string, minFrames int) error {
 			if err != nil {
 				if res != "" {
 					fmt.Printf("rm intermediate PNGs:\n%s\n", res)
+				}
+				return err
+			}
+			cmdRm = []string{"rm", "-f"}
+			for _, idx := range ind {
+				cmdRm = append(cmdRm, fmt.Sprintf("%s%06d.png.hint", root, idx))
+			}
+			res, err = execCommand(debug, output, cmdRm, nil)
+			if err != nil {
+				if res != "" {
+					fmt.Printf("rm intermediate Hints:\n%s\n", res)
 				}
 				return err
 			}
@@ -382,6 +408,8 @@ MIN_FRAMES - minimum number of frames that must be present in CSQ file (default 
 DEBUG - enabled debug mode (default 0)
 OUTPUT - enabled additional output
 NORM - do not remove temporary files used
+HINT - use hint program to generate moving live histogram data and use it to create video
+  this should make flashing less visible (histogram calculated over 16 frames by default)
 MODE - set video encoding mode: if empty then uses '-q:v 0', else:
   mpng (loseless PNG sequence), libx264 preset name otherwise (CRF mode):
   ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow
@@ -395,6 +423,7 @@ CRF - set quantizer parameter: 0-51 when running in CRF mode, default 17
 // DEBUG (default 0)
 // OUTPUT (default false)
 // NORM (default false)
+// HINT (default false)
 func main() {
 	if len(os.Args) == 1 {
 		fmt.Printf("Need at least one file name\n")
