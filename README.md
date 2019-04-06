@@ -39,3 +39,5 @@ Other examples:
 - Best `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(cos(x1*3.1415926)+1)/2" GF="1-x1" BF="1-x1" HPOW=1 INF=20 ./csqconv f.csq`.
 - Blended rainbow: `RC=1 GC=1 BC=1 RLO=.2 RHI=.2 GLO=.2 GHI=.2 BLO=.2 BHI=.2 NA=1 LIB=libjpegbw.so RF="((1-x1)*9+gsrainbowr(x1)*1)/10" GF="((1-x1)*9+gsrainbowg(x1)*1)/10" BF="((1-x1)*9+gsrainbowb(x1)*1)/10" INF=16 csqconv f.csq`.
 - Info rainbow: `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(x1*6+gsrainbowr(x1)*1)/7" GF="(x1*6+gsrainbowg(x1)*1)/7" BF="(x1*6+gsrainbowb(x1)*1)/7" INF=16 csqconv f.csq`
+- Use `HINT=1` to calculate intensity range for 32 frames (less bumpy exposure adjustments), add `MF=60` to average instensity from 60 frames. Use `MODE=veryslow CRF=1` to have best possible loosy compression.
+- Use `MODE=veryslow CRF=0` to have X264 loseless compression (huge files), use `MODE=mpng` to have totally looseless montion PNG compression.

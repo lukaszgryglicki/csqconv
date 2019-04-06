@@ -281,7 +281,7 @@ func processCsqFile(fn string, minFrames int) error {
 
 	for i, ind := range indicesA {
 		if hint {
-			fmt.Printf("Postprocessing %d/%d pack: %d frames (hint command)\n", i+1, packs, len(ind))
+			fmt.Printf("Postprocessing %d/%d pack: %d frames (hist command)\n", i+1, packs, len(ind))
 			cmd := []string{"hist"}
 			for _, idx := range ind {
 				cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
