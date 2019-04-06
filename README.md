@@ -40,4 +40,7 @@ Other examples:
 - Blended rainbow: `RC=1 GC=1 BC=1 RLO=.2 RHI=.2 GLO=.2 GHI=.2 BLO=.2 BHI=.2 NA=1 LIB=libjpegbw.so RF="((1-x1)*9+gsrainbowr(x1)*1)/10" GF="((1-x1)*9+gsrainbowg(x1)*1)/10" BF="((1-x1)*9+gsrainbowb(x1)*1)/10" INF=16 csqconv f.csq`.
 - Info rainbow: `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(x1*6+gsrainbowr(x1)*1)/7" GF="(x1*6+gsrainbowg(x1)*1)/7" BF="(x1*6+gsrainbowb(x1)*1)/7" INF=16 csqconv f.csq`
 - Use `HINT=1` to calculate intensity range for 32 frames (less bumpy exposure adjustments), add `MF=60` to average instensity from 60 frames. Use `MODE=veryslow CRF=1` to have best possible loosy compression.
-- Use `MODE=veryslow CRF=0` to have X264 loseless compression (huge files), use `MODE=mpng` to have totally looseless montion PNG compression.
+- Use `MODE=veryslow CRF=0` to have X264 loseless compression (huge files), use `MODE=mpng` to have totally loseless montion PNG compression. Use `PQ=n` to control PNG compression levels: 0=default, 1=no compression, 2=best speed, 3=best size.
+- Use `OGS=1` to enable grayscale PNG outputs (so video will be made from 16-bit PNGs instead of 64-bit RGBA PNGs). Use `GSR=2 GSG=7 GSB=1` to set R,G,B channels mix ratio for grayscale `OGS` output.
+-So to have a really loseless video but with smallest possible size use: `INF=16 HINT=1 HINTREQ=1 MF=46 MODE=mpng PQ=3 OGS=1 GSR=0.2125 GSG=0.7154 GSB=0.0721 csqconv f.csq`. If you want loseless but not using mpng replace `MODE=mpng` with `MODE=veryslow CRF=0`.
+- If you want best possible quality but not loseless replace `MODE=mpng` with `MODE=veryslow CRF=1`. `CRF` values up to 12 or even 15 will give visually the same quality but a lot smaller sizes.
