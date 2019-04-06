@@ -44,3 +44,4 @@ Other examples:
 - Use `OGS=1` to enable grayscale PNG outputs (so video will be made from 16-bit PNGs instead of 64-bit RGBA PNGs). Use `GSR=2 GSG=7 GSB=1` to set R,G,B channels mix ratio for grayscale `OGS` output.
 -So to have a really loseless video but with smallest possible size use: `INF=16 HINT=1 HINTREQ=1 MF=46 MODE=mpng PQ=3 OGS=1 GSR=0.2125 GSG=0.7154 GSB=0.0721 csqconv f.csq`. If you want loseless but not using mpng replace `MODE=mpng` with `MODE=veryslow CRF=0`.
 - If you want best possible quality but not loseless replace `MODE=mpng` with `MODE=veryslow CRF=1`. `CRF` values up to 12 or even 15 will give visually the same quality but a lot smaller sizes.
+- Typical REAL loseless: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 HINT=1 PQ=3 OGS=1 RF="1-x1" GF="1-x1" BF="1-x1" MODE=veryslow CRF=0 csqconv f.csq`.
