@@ -347,27 +347,28 @@ func processCsqFile(fn string, minFrames int) error {
 	last := a[lA-1]
 	a[lA-1] = "co_" + last
 	nroot := strings.Join(a, "/")
-	pattern := nroot + "%06d.png"
+	//pattern := nroot + "%06d.png"
+	pattern := nroot + "*.png"
 	vidfn := root + ".mp4"
 	vCmd := []string{}
 	if mode == "" {
 		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -q:v 0 -y -vcodec libx264 -y "small.mp4"
 		vCmd = []string{
-			"ffmpeg", "-f", "image2",
+			"ffmpeg", "-f", "image2", "-pattern_type", "glob",
 			"-vcodec", "png", "-r", "30", "-i", pattern,
 			"-q:v", "0", "-vcodec", "libx264", "-y", vidfn,
 		}
 	} else if mode == mpng {
 		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -codec copy -y "small.mp4"
 		vCmd = []string{
-			"ffmpeg", "-f", "image2",
+			"ffmpeg", "-f", "image2", "-pattern_type", "glob",
 			"-vcodec", "png", "-r", "30", "-i", pattern,
 			"-codec", "copy", "-y", vidfn,
 		}
 	} else {
 		// ffmpeg -f image2 -vcodec png -r 30 -i "co_small%06d.png" -vcodec libx264 -crf 0 -preset veryslow -y "small.mp4"
 		vCmd = []string{
-			"ffmpeg", "-f", "image2",
+			"ffmpeg", "-f", "image2", "-pattern_type", "glob",
 			"-vcodec", "png", "-r", "30", "-i", pattern,
 			"-vcodec", "libx264", "-crf", crf,
 			"-preset", mode, "-y", vidfn,
