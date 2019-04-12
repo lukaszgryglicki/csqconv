@@ -21,7 +21,7 @@ Convert FLIR camera `*.csq` files into a `*.pp4` H.264 video file (you can optio
 - Alarms (low B, medium G, high R): `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="saturate(x1, .02, .49)+saturate(x1, .51, .98_1)" GF="saturate(x1, .02, .49_1)-saturate(x1, 0.51,.51_1)+saturate(x1, .51, .98)" BF="saturate(x1, .02_1, .49)+saturate(x1, .51, .98)" csqconv f.csq`.
 - See `jpegbw` README.md to see multiple options that can be passed to this tool.
 
-Other examples:
+# Other examples
 
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="saturate(((x1-.02)*1.04)^2., .02, .49)+saturate(((x1-.02)*1.04)^2., .51, .98_1)" GF="saturate(((x1-.02)*1.04)^2., .02, .49_1)-saturate(((x1-.02)*1.04)^2., 0.51,.51_1)+saturate(((x1-.02)*1.04)^2., .51, .98)" BF="saturate(((x1-.02)*1.04)^2., .02_1, .49)+saturate(((x1-.02)*1.04)^2., .51, .98)" csqconv FLIR0089.csq`.
 - `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so BF="saturate((((1.-x1)-.02)*1.04)^2., .02_1,.98)" GF="saturate((((1-x1)-.02)*1.04)^2., .02, .98)" RF="saturate((((1.-x1)-.02)*1.04)^2., 0, .98_1)" csqconv FLIR0096.csq`.
@@ -48,3 +48,10 @@ Other examples:
 - Typical REAL loseless: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 HINT=1 PQ=3 OGS=1 RF="1-x1" GF="1-x1" BF="1-x1" MODE=veryslow CRF=0 csqconv f.csq`.
 - Hot and Cold black - medium white, grayscaled using X.264 and skipping intermediate PNG compression: `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=18 HINT=1 PQ=1 OGS=1 RF="sin(3.1415926535*x1)" GF="sin(3.1415926535*x1)" BF="sin(3.1415926535*x1)" MODE=veryslow csqconv f.csq`.
 - Double blended rainbow: `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowr(if(2*x1>1,2*x1-1,2*x1))*1)/7" GF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowg(if(2*x1>1,2*x1-1,2*x1))*1)/7" BF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowb(if(2*x1>1,2*x1-1,2*x1))*1)/7" INF=16 HINT=1 csqconv f.csq`.
+- Rainblow with gray too: `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=.1 RHI=.1 GLO=.1 GHI=.1 BLO=.1 BHI=.1 NA=1 INF=20 HINT=1 PQ=1 MODE=veryslow RF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowr((x1-.1)*1.25)))' GF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowg((x1-.1)*1.25)))' BF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowb((x1-.1)*1.25)))' csqconv f.csq`.
+
+# My guess work
+
+This is my guess work between converting Unsigned 16bit int values (u16) into temperatures in Celsius. camera has two modes: `-20 - 120` (but it shows temperatures down to -40 so I've used two guesses) and `0 - 650` - I've marked it with `(*)`.
+- Use `ttou16.sh temp_in_celsius_1 temp_in_celsius_2 ...` to get UINT16 values.
+- Use `u16tot.sh U16_value_1 U16_value_2 ...` to get temperatures in Celsius.
