@@ -50,6 +50,7 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 - Double blended rainbow: `RC=1 GC=1 BC=1 RLO=3 RHI=3 GLO=3 GHI=3 BLO=3 BHI=3 NA=1 LIB=libjpegbw.so RF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowr(if(2*x1>1,2*x1-1,2*x1))*1)/7" GF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowg(if(2*x1>1,2*x1-1,2*x1))*1)/7" BF="(if(2*x1>1,2*x1-1,2*x1)*6+gsrainbowb(if(2*x1>1,2*x1-1,2*x1))*1)/7" INF=16 HINT=1 csqconv f.csq`.
 - Rainblow with gray too: `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=.1 RHI=.1 GLO=.1 GHI=.1 BLO=.1 BHI=.1 NA=1 INF=20 HINT=1 PQ=1 MODE=veryslow RF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowr((x1-.1)*1.25)))' GF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowg((x1-.1)*1.25)))' BF='if(x1<.1,10*(.1-x1),if(x1>.9,(1.-x1)*10,gsrainbowb((x1-.1)*1.25)))' csqconv f.csq`.
 - Fixed from ~10C to ~40C with alarms: `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLOI=14000 RHII=23400 GLOI=14000 GHII=23400 BLOI=14000 BHII=23400 NA=1 INF=16 PQ=1 RF="if(x1>.99,1,if(x1<.01,0,x1))" GF="if(x1>.99,0,if(x1<.01,0,x1))" BF="if(x1>.99,0,if(x1<.01,1,x1))" csqconv f.csq`.
+- About 3.8C to 20.3C with alarms: `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLOI=13000 RHII=22000 GLOI=13000 GHII=22000 BLOI=13000 BHII=22000 NA=1 INF=16 PQ=1 RF="if(x1>.99,1,if(x1<.01,0,x1))" GF="if(x1>.99,0,if(x1<.01,0,x1))" BF="if(x1>.99,0,if(x1<.01,1,x1))" csqconv f.csq`
 
 # My guess work
 
