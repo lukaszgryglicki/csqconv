@@ -225,6 +225,17 @@ func processCsqFile(fn string, minFrames int) error {
 	norm := os.Getenv("NORM") != ""
 	hint := os.Getenv("HINT") != ""
 
+	sr := 0
+	if os.Getenv("SR") != "" {
+		sr, err = strconv.Atoi(os.Getenv("SR"))
+		if err != nil {
+			return err
+		}
+		if sr < 2 {
+			return fmt.Errorf("SR must be >= 2: %d", sr)
+		}
+	}
+
 	var ifn string
 	ext := []string{".raw", ".jpegls"}
 	jpegLS := []byte("\xff\xd8\xff\xf7")
@@ -280,6 +291,20 @@ func processCsqFile(fn string, minFrames int) error {
 	}
 
 	for i, ind := range indicesA {
+		if sr > 1 {
+			fmt.Printf("Postprocessing %d/%d pack: %d frames (sr command)\n", i+1, packs, len(ind))
+			cmd := []string{"sr", fmt.Sprintf("%d", sr)}
+			for _, idx := range ind {
+				cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
+			}
+			res, err := execCommand(debug, output, cmd, map[string]string{"GS": "1", "INPL": "1"})
+			if err != nil {
+				if res != "" {
+					fmt.Printf("postprocessing frames via 'sr:%d' tool:\n%s\n", sr, res)
+				}
+				return err
+			}
+		}
 		if hint {
 			fmt.Printf("Postprocessing %d/%d pack: %d frames (hist command)\n", i+1, packs, len(ind))
 			cmd := []string{"hist"}
@@ -289,7 +314,7 @@ func processCsqFile(fn string, minFrames int) error {
 			res, err := execCommand(debug, output, cmd, nil)
 			if err != nil {
 				if res != "" {
-					fmt.Printf("postprocessing frames via 'jpeg' tool:\n%s\n", res)
+					fmt.Printf("postprocessing frames via 'hist' tool:\n%s\n", res)
 				}
 				return err
 			}
@@ -415,6 +440,7 @@ MODE - set video encoding mode: if empty then uses '-q:v 0', else:
   mpng (loseless PNG sequence), libx264 preset name otherwise (CRF mode):
   ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow
 CRF - set quantizer parameter: 0-51 when running in CRF mode, default 17
+SR - set scale factor (2 will combine 4 images, 3 will combine 9 images, N will combine N^2 images)
 `
 	fmt.Printf("%s\n", helpStr)
 }
