@@ -297,7 +297,7 @@ func processCsqFile(fn string, minFrames int) error {
 			for _, idx := range ind {
 				cmd = append(cmd, fmt.Sprintf("%s%06d.png", root, idx))
 			}
-			res, err := execCommand(debug, output, cmd, map[string]string{"GS": "1", "INPL": "1"})
+			res, err := execCommand(debug, output, cmd, map[string]string{"GS": "1", "INPL": "1", "PAD": "1"})
 			if err != nil {
 				if res != "" {
 					fmt.Printf("postprocessing frames via 'sr:%d' tool:\n%s\n", sr, res)
