@@ -55,6 +55,7 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 - Blue lava: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 PQ=1 HINT=1 MF=300 MODE=veryslow CRF=14 RF='if(x1<.9,if(x1<.3,x1*3.33333,1),1-2*(x1-.9))' GF='if(x1<.9,if(x1<.3,0,if(x1>.6,1,(x1-.3)*3.33333)),1-2*(x1-.9))' BF='if(x1<.6,0,(x1-.6)*3.33333)' csqconv f.csq`.
 - Super res (noise) predator mode (with motion detection): `LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 PQ=1 HINT=1 MF=120 RF='gsrainbowr(x1)' GF='gsrainbowg(x1)' BF='gsrainbowb(x1)' M=4 SR=3 ./csqconv f.csq`.
 - Buish lava: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 PQ=1 HINT=1 MF=300 MODE=veryslow CRF=14 RF='if(x1<.95,if(x1<.33333,x1*3,1),1-2*(x1-.95))' GF='if(x1<.95,if(x1<.33333,0,if(x1>.66667,1,(x1-.33333)*3)),1-2*(x1-.95))' BF='if(x1<.66667,0,(x1-.66667)*3)' csqconv f.csq`.
+- Red hot, blue cold: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="if(x1<.5,if(x1<.25,0,(x1-.25)*4),if(x1<.75,1,(1-x1)*4))" GF="if(x1<.5,if(x1<.25,0,(x1-0.25)*4),if(x1<.75,(0.75-x1)*4,0))" BF="if(x1<.5,if(x1<.25,x1*4,1),if(x1<.75,(.75-x1)*4,0))" INF=30 PQ=1 HINT=1 MF=20 MODE=veryslow CRF=15 csqconv *.csq`.
 
 # My guess work
 
