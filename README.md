@@ -57,7 +57,8 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 - Buish lava: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=16 PQ=1 HINT=1 MF=300 MODE=veryslow CRF=14 RF='if(x1<.95,if(x1<.33333,x1*3,1),1-2*(x1-.95))' GF='if(x1<.95,if(x1<.33333,0,if(x1>.66667,1,(x1-.33333)*3)),1-2*(x1-.95))' BF='if(x1<.66667,0,(x1-.66667)*3)' csqconv f.csq`.
 - Red hot, blue cold: `RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="if(x1<.5,if(x1<.25,0,(x1-.25)*4),if(x1<.75,1,(1-x1)*4))" GF="if(x1<.5,if(x1<.25,0,(x1-0.25)*4),if(x1<.75,(0.75-x1)*4,0))" BF="if(x1<.5,if(x1<.25,x1*4,1),if(x1<.75,(.75-x1)*4,0))" INF=30 PQ=1 HINT=1 MF=20 MODE=veryslow CRF=15 csqconv *.csq`.
 - Rainbow blacked on hottest and coldest: ` LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=32 PQ=1 HINT=1 MF=16 RF='gsrainbowr(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' GF='gsrainbowg(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' BF='gsrainbowb(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' M=2 SR=2 csqconv *.csq`.
-- Countour lines in separate data areas `CONT=2 csqconv fn.csq`.
+- Countour lines in separate data areas `CONT=2 csq.sh fn.csq`.
+- Color 4 distinct edge values (0.2, 0.4, 0.6, 0.8) in red: `CONT=4 SURF=2 REDGE=1 GEDGE=0 BEDGE=0 NA=1 csq.sh fn.csq`
 
 # My guess work
 
