@@ -59,7 +59,7 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 - Rainbow blacked on hottest and coldest: ` LIB=libjpegbw.so RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=32 PQ=1 HINT=1 MF=16 RF='gsrainbowr(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' GF='gsrainbowg(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' BF='gsrainbowb(x1)*(1-(cos(x1*2*3.1415926)+1)/2)^.5' M=2 SR=2 csqconv *.csq`.
 - Countour lines in separate data areas `CONT=2 csq.sh fn.csq`.
 - Color 4 distinct edge values (0.2, 0.4, 0.6, 0.8) in red: `CONT=4 SURF=2 REDGE=1 GEDGE=0 BEDGE=0 csq.sh fn.csq`
-- Rainbow with inverted edge lines: `CONT=3 SURF=2 EDGE=3 RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="gsrainbowr(x1)" GF="gsrainbowg(x1)" BF="gsrainbowb(x1)" INF=16 csqconv f.csq`.
+- Rainbow with inverted edge lines: `CONT=1 SURF=2 EDGE=3 GCONT=1 RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="gsrainbowr(x1)" GF="gsrainbowg(x1)" BF="gsrainbowb(x1)" INF=16 csqconv f.csq`.
 - B/W with inverted edges: `CONT=2 SURF=2 EDGE=3 csqbw.sh f.csq`.
 
 # My guess work
