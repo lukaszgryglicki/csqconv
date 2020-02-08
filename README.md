@@ -61,6 +61,7 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 - Color 4 distinct edge values (0.2, 0.4, 0.6, 0.8) in red: `CONT=4 SURF=2 REDGE=1 GEDGE=0 BEDGE=0 csq.sh fn.csq`
 - Rainbow with inverted edge lines: `CONT=1 SURF=2 EDGE=3 GCONT=1 RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 LIB=libjpegbw.so RF="gsrainbowr(x1)" GF="gsrainbowg(x1)" BF="gsrainbowb(x1)" INF=16 csqconv f.csq`.
 - B/W with inverted edges: `CONT=2 SURF=2 EDGE=3 csqbw.sh f.csq`.
+- Super detailed rainbow: `NA=1 RC=1 GC=1 BC=1 LIB=libjpegbw.so RF='gsr(x1,1/9)' GF='gsg(x1,1/9)' BF='gsb(x1,1/9)' INF=32 RLO=2 RHI=2 GLO=2 GHI=2 BLO=2 BHI=2 PQ=1 HINT=1 MF=30 MODE=veryslow CRF=14 csqconv f.csq`.
 
 # My guess work
 
