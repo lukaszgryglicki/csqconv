@@ -14,4 +14,4 @@ if [ -z "$BF" ]
 then
   BF='if(x1<.66667,0,(x1-.66667)*3)'
 fi
-RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=20 PQ=1 HINT=1 MF=100 MODE=veryslow CRF=14 RF="$RF" GF="$GF" BF="$BF" csqconv "$@"
+RC=1 GC=1 BC=1 RLO=1 RHI=1 GLO=1 GHI=1 BLO=1 BHI=1 NA=1 INF=20 PQ=1 HINT=1 MF=30 MODE=veryslow CRF=14 RF="$RF" GF="$GF" BF="$BF" csqconv "$@"
