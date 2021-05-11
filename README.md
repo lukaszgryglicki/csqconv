@@ -68,4 +68,3 @@ Convert FLIR camera `*.csq` files into a `*.mp4` H.264 video file (you can optio
 This is my guess work between converting Unsigned 16bit int values (u16) into temperatures in Celsius. camera has two modes: `-20 - 120` (but it shows temperatures down to -40 so I've used two guesses) and `0 - 650` - I've marked it with `(*)`.
 - Use `ttou16.sh temp_in_celsius_1 temp_in_celsius_2 ...` to get UINT16 values.
 - Use `u16tot.sh U16_value_1 U16_value_2 ...` to get temperatures in Celsius.
-- TODO: continue/confirm
